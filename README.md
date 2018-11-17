@@ -1,8 +1,5 @@
 # Overview
-This project is a simple Docker image that provides access to the
-[Azul Systems JDK](http://www.azul.com/downloads/zulu/).  It is intended
-for **running** JVM applications, not building and testing them. If you
-need to build a JVM application, [look at this project](https://github.com/kurron/docker-azul-jdk-11-build).
+This project is a simple Docker image that provides access to the [Azul Systems JDK](http://www.azul.com/downloads/zulu/).  It is intended for **running** JVM applications, not building and testing them. If you need to build a JVM application, [look at this project](https://github.com/kurron/docker-azul-jdk-11-build).
 
 
 # Prerequisites
@@ -21,13 +18,9 @@ Docker will automatically install the newly built image into the cache.
 Use `./test.sh` to exercise the image.  
 
 ## Example Usage
-There are samples on how to use the image in the `examples` folder and we will
-highlight some options here as well.
+There are samples on how to use the image in the `examples` folder and we will highlight some options here as well.
 
-The basic idea is to use a Bash script to launch the JVM so you can apply
-the appropriate switches that are useful in a containerized environment.  You
-should copy that script into your image and make the script the entrypoint
-to your image.
+The basic idea is to use a Bash script to launch the JVM so you can apply the appropriate switches that are useful in a containerized environment.  You should copy that script into your image and make the script the entrypoint to your image.
 
 The `Dockerfile`:
 ```
@@ -47,13 +40,15 @@ ENTRYPOINT ["/home/microservice/launch-jvm.sh", "Hello"]
 ```
 Example `Bash` script:
 ```
-#!/usr/bin/env  bash
+#!/usr/bin/env bash
 
-JVM_DNS_TTL=${1:-30}
+PERCENTAGE_RAM_FOR_HEAP=${1:-80}
+JVM_DNS_TTL=${2:-30}
 
 CMD="${JAVA_HOME}/bin/java \
+    -XX:+UseContainerSupport \
+    -XX:MaxRAMPercentage=${PERCENTAGE_RAM_FOR_HEAP}
     -server \
-    -XX:+UseSerialGC \
     -Dsun.net.inetaddr.ttl=${JVM_DNS_TTL} \
     $*"
 
@@ -61,13 +56,16 @@ echo ${CMD}
 exec ${CMD}
 ```
 
-Please note that it is **very important to use `exec` to launch your script**
-or you will have signal issues.
+Please note that it is **very important to use `exec` to launch your script** or you will have signal issues.
 
-You can control how much CPU and RAM the container see via Docker's
-`--cpus`, `--memory` and `--memory-swap` switches.
+You can control how much CPU and RAM the container see via Docker's `--cpus`, `--memory` and `--memory-swap` switches.
 
-## Observed JVM Memory Behavior
+## Controlling JVM Memory
+JDK 11 greatly simplifies controlling JVM heap size when combined with Docker.  The basic idea is that you tell Docker how much RAM the container can use and tell the JVM what percentage of that RAM can be used for heap.  Here is an example where Docker is told to limit the container to 1 GB of RAM and the JVM is told that it can use 80% of that for heap.
+
+```
+docker run  --memory 1gb --rm  azul/zulu-openjdk:11 sh -c 'exec java  -XX:+PrintFlagsFinal -XX:+UseContainerSupport -XX:MaxRAMPercentage=80 -version | grep -Ei "maxheapsize"'
+```
 
 # Troubleshooting
 
@@ -86,4 +84,4 @@ This project is licensed under the
 
 # List of Changes
 
-* initial release 
+* initial release
