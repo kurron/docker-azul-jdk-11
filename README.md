@@ -67,6 +67,9 @@ JDK 11 greatly simplifies controlling JVM heap size when combined with Docker.  
 docker run  --memory 1gb --rm  azul/zulu-openjdk:11 sh -c 'exec java  -XX:+PrintFlagsFinal -XX:+UseContainerSupport -XX:MaxRAMPercentage=80 -version | grep -Ei "maxheapsize"'
 ```
 
+## Example Code
+If you are interested to see the new heap management in action, run the sample in `examples/single-core-jmx`.  Attach VisualVM to the process and you should see the heap set to 80% of the RAM allocated by Docker. Eventually, all the heap is consumed and the program crashes but you can see how the JVM behaves.
+
 # Troubleshooting
 
 # License and Credits

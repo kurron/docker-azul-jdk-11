@@ -8,27 +8,19 @@ set -e
 # Since we are running in a container, the heap dump and RMI settings have been omitted.
 
 # This is a sample to show how you might invoke the JVM using settings that are
-# approprivate for a single core environment.  We're using the new CGroup-aware
-# memory settings.
+# approprivate for a single core environment, using the new Docker aware JVM settings.
 
 JVM_DNS_TTL=${1:-30}
-JVM_HEAP=${2:-32m}
+JVM_HEAP_PERCENTAGE=${2:-80}
 JVM_JMX_PORT=${3:-2020}
-
-# If you want to be explicit about memory settings
-#-XX:MaxRam=${JVM_MAX_RAM} \
-#-XX:MaxMetaspaceSize=${JVM_METASPACE} \
 
 # Useful in debugging
 # -XX:+PrintFlagsFinal \
 
-#   -Xms${JVM_HEAP} \
-#   -Xmx${JVM_HEAP} \
-
 CMD="${JAVA_HOME}/bin/java \
     -server \
-    -XX:+UnlockExperimentalVMOptions \
-    -XX:+UseCGroupMemoryLimitForHeap \
+    -XX:+UseContainerSupport \
+    -XX:MaxRAMPercentage=${JVM_HEAP_PERCENTAGE} \
     -XX:+ScavengeBeforeFullGC \
     -XX:+CMSScavengeBeforeRemark \
     -XX:+UseSerialGC \
