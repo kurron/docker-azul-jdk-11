@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr.bin/env bash
 
-RAM_IN_BYTES=${1:-67108864}
+# runs a "memory leak" program that you can attach VisualVM to and watch the heap behavior
+RAM=${1:-256mb}
 
 CMD="docker run --cpus 1 \
                 --interactive \
@@ -8,9 +9,8 @@ CMD="docker run --cpus 1 \
                 --net host \
                 --rm \
                 --tty \
-                --memory ${RAM_IN_BYTES} \
+                --memory ${RAM} \
                 --memory-swap 0 \
-                --volume /var/run/docker.sock:/var/run/docker.sock \
-                singlecorejmx_single-core-jdk-jmx:latest"
+                single-core-jmx_single-core-jdk-jmx:latest"
 echo $CMD
 $CMD
