@@ -8,6 +8,6 @@ CMD="docker run --cpus 1 \
                 --name zulu-test \
                 --rm \
                 --tty \
-                docker-azul-jdk-11_azul-jdk:latest"
+                kurron/docker-azul-jdk-11:latest"
 echo $CMD
 $CMD

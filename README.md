@@ -4,7 +4,6 @@ This project is a simple Docker image that provides access to the [Azul Systems 
 
 # Prerequisites
 * a working [Docker](http://docker.io) engine
-* a working [Docker Compose](http://docker.io) installation
 
 # Building
 Type `./build.sh` to build the image.
@@ -88,3 +87,4 @@ This project is licensed under the
 # List of Changes
 
 * initial release
+* no longer use Docker Compose to build the image 
